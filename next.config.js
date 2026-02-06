@@ -16,6 +16,11 @@ const nextConfig = {
   eslint: {
     ignoreDuringBuilds: true,
   },
+  
+  // Experimental: Disable static optimization for all pages to prevent build errors
+  experimental: {
+    appDir: true,
+  },
 
   /**
    * API Rewrites - Disabled for DEMO MODE

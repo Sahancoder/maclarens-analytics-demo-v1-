@@ -4,6 +4,11 @@ import { inter, roboto, sansation } from "@/lib/fonts";
 import { NextAuthProvider } from "@/lib/auth-provider";
 import { AuthProvider } from "@/lib/auth-context";
 
+// Force dynamic rendering for all routes
+export const dynamic = 'force-dynamic';
+export const dynamicParams = true;
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: "McLarens Analytics.io | Enterprise Financial Analytics",
   description:
