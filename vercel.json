@@ -1,0 +1,17 @@
+{
+  "buildCommand": "npm run build",
+  "outputDirectory": ".next",
+  "framework": "nextjs",
+  "installCommand": "npm install",
+  "devCommand": "npm run dev",
+  "env": {
+    "NEXT_PUBLIC_USE_MOCK_DATA": "true"
+  },
+  "build": {
+    "env": {
+      "NEXT_PUBLIC_USE_MOCK_DATA": "true",
+      "NEXT_PUBLIC_APP_NAME": "McLarens Analytics Demo",
+      "NEXT_PUBLIC_APP_ENV": "production"
+    }
+  }
+}
