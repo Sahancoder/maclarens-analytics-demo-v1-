@@ -1,85 +1,33 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { useQuery, gql } from "@apollo/client";
-import { getDashboardRoute, normalizeRole } from "@/lib/role-routing";
 
 // Disable static generation for this page
 export const dynamic = 'force-dynamic';
-
-const GET_ME = gql`
-  query Me {
-    me {
-      id
-      email
-      name
-      role
-      companyId
-      clusterId
-    }
-  }
-`;
+export const dynamicParams = true;
+export const revalidate = 0;
 
 export default function AuthCallbackPage() {
-  const { data: session, status } = useSession();
   const router = useRouter();
   const [error, setError] = useState<string | null>(null);
-  const idToken = session?.idToken;
-
-  const { data, loading } = useQuery(GET_ME, {
-    skip: status !== "authenticated" || !idToken,
-    fetchPolicy: "network-only",
-    context: {
-      headers: idToken ? { authorization: `Bearer ${idToken}` } : {},
-    },
-  });
 
   useEffect(() => {
-    if (idToken) {
-      localStorage.setItem("mclarens_token", idToken);
+    // In DEMO MODE, just redirect to a default dashboard
+    // In production, this would handle OAuth callback and fetch user details
+    
+    const isDemoMode = process.env.NEXT_PUBLIC_USE_MOCK_DATA !== 'false';
+    
+    if (isDemoMode) {
+      // Demo mode: redirect to system admin dashboard
+      setTimeout(() => {
+        router.push('/system-admin/dashboard');
+      }, 1000);
+    } else {
+      // Production mode would handle real auth here
+      setError("Authentication configuration required");
     }
-  }, [idToken]);
-
-  const role = useMemo(() => normalizeRole(data?.me?.role), [data?.me?.role]);
-  const dashboardRoute = useMemo(() => getDashboardRoute(role), [role]);
-
-  useEffect(() => {
-    if (status === "loading" || loading) return;
-
-    if (status === "unauthenticated") {
-      router.push("/login?error=auth_failed");
-      return;
-    }
-
-    if (!data?.me) {
-      setError("You are not provisioned. Contact administrator.");
-      return;
-    }
-
-    const hasScope =
-      role === "DATA_OFFICER" || role === "COMPANY_DIRECTOR"
-        ? Boolean(data.me.companyId || data.me.clusterId)
-        : true;
-
-    if (!hasScope) {
-      setError("You are not provisioned. Contact administrator.");
-      return;
-    }
-
-    if (dashboardRoute) {
-      localStorage.removeItem("auth");
-      localStorage.removeItem("director-auth");
-      localStorage.removeItem("admin-auth");
-      localStorage.removeItem("ceo-auth");
-      localStorage.setItem("mclarens_user", JSON.stringify(data.me));
-      router.push(dashboardRoute);
-      return;
-    }
-
-    setError("Your account does not have an assigned role.");
-  }, [status, loading, data, router, role, dashboardRoute]);
+  }, [router]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
