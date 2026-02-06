@@ -6,6 +6,9 @@ import { useRouter } from "next/navigation";
 import { useQuery, gql } from "@apollo/client";
 import { getDashboardRoute, normalizeRole } from "@/lib/role-routing";
 
+// Disable static generation for this page
+export const dynamic = 'force-dynamic';
+
 const GET_ME = gql`
   query Me {
     me {
